@@ -1,0 +1,6 @@
+C:\github-repositories\Software-Construction-Assignment\assignment1\Calculator\Calculator\bin\Debug\Calculator.exe
+C:\github-repositories\Software-Construction-Assignment\assignment1\Calculator\Calculator\bin\Debug\Calculator.pdb
+C:\github-repositories\Software-Construction-Assignment\assignment1\Calculator\Calculator\obj\Debug\Calculator.csproj.AssemblyReference.cache
+C:\github-repositories\Software-Construction-Assignment\assignment1\Calculator\Calculator\obj\Debug\Calculator.csproj.CoreCompileInputs.cache
+C:\github-repositories\Software-Construction-Assignment\assignment1\Calculator\Calculator\obj\Debug\Calculator.exe
+C:\github-repositories\Software-Construction-Assignment\assignment1\Calculator\Calculator\obj\Debug\Calculator.pdb
