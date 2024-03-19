@@ -1,0 +1,15 @@
+C:\github-repositories\Software-Construction-Assignment\assignment3\assignment3\bin\Debug\net8.0\assignment3.exe
+C:\github-repositories\Software-Construction-Assignment\assignment3\assignment3\bin\Debug\net8.0\assignment3.deps.json
+C:\github-repositories\Software-Construction-Assignment\assignment3\assignment3\bin\Debug\net8.0\assignment3.runtimeconfig.json
+C:\github-repositories\Software-Construction-Assignment\assignment3\assignment3\bin\Debug\net8.0\assignment3.dll
+C:\github-repositories\Software-Construction-Assignment\assignment3\assignment3\bin\Debug\net8.0\assignment3.pdb
+C:\github-repositories\Software-Construction-Assignment\assignment3\assignment3\obj\Debug\net8.0\assignment3.GeneratedMSBuildEditorConfig.editorconfig
+C:\github-repositories\Software-Construction-Assignment\assignment3\assignment3\obj\Debug\net8.0\assignment3.AssemblyInfoInputs.cache
+C:\github-repositories\Software-Construction-Assignment\assignment3\assignment3\obj\Debug\net8.0\assignment3.AssemblyInfo.cs
+C:\github-repositories\Software-Construction-Assignment\assignment3\assignment3\obj\Debug\net8.0\assignment3.csproj.CoreCompileInputs.cache
+C:\github-repositories\Software-Construction-Assignment\assignment3\assignment3\obj\Debug\net8.0\assignment3.sourcelink.json
+C:\github-repositories\Software-Construction-Assignment\assignment3\assignment3\obj\Debug\net8.0\assignment3.dll
+C:\github-repositories\Software-Construction-Assignment\assignment3\assignment3\obj\Debug\net8.0\refint\assignment3.dll
+C:\github-repositories\Software-Construction-Assignment\assignment3\assignment3\obj\Debug\net8.0\assignment3.pdb
+C:\github-repositories\Software-Construction-Assignment\assignment3\assignment3\obj\Debug\net8.0\assignment3.genruntimeconfig.cache
+C:\github-repositories\Software-Construction-Assignment\assignment3\assignment3\obj\Debug\net8.0\ref\assignment3.dll
