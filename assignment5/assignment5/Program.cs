@@ -1,35 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-//写一个订单管理的控制台程序，能够实现添加订单、删除订单、修改订单、查询订单（按照订单号、商品名称、客户、订单金额等进行查询）功能。并对各个Public方法编写测试用例。
-
-//提示：主要的类有Order（订单）、OrderDetails（订单明细），OrderService（订单服务），订单数据可以保存在OrderService中一个List中。在Program里面可以调用OrderService的方法完成各种订单操作。
-
-//要求：
-//（1）使用LINQ语言实现各种查询功能，查询结果按照订单总金额排序返回。
-//（2）在订单删除、修改失败时，能够产生异常并显示给客户错误信息。
-//（3）作业的订单和订单明细类需要重写Equals方法，确保添加的订单不重复，每个订单的订单明细不重复。
-//（4）订单、订单明细、客户、货物等类添加ToString方法，用来显示订单信息。
-//（5） OrderService提供排序方法对保存的订单进行排序。默认按照订单号排序，也可以使用Lambda表达式进行自定义排序。
-
-
 
 // 订单明细类
 public class OrderDetails
 {
-    public int Id { get; set; }
     public string ProductName { get; set; }
     public double Price { get; set; }
     public int Quantity { get; set; }
-
-    public override bool Equals(object obj)
-    {
-        if (obj is OrderDetails other)
-        {
-            return this.Id == other.Id && this.ProductName == other.ProductName;
-        }
-        return false;
-    }
 
     public override string ToString()
     {
@@ -43,183 +21,156 @@ public class Order
     public int OrderId { get; set; }
     public string Customer { get; set; }
     public List<OrderDetails> Details { get; set; }
-
-    public double TotalAmount => Details.Sum(detail => detail.Price * detail.Quantity);
-
-    public override bool Equals(object obj)
+    public Order()
     {
-        if (obj is Order other)
-        {
-            return this.OrderId == other.OrderId;
-        }
-        return false;
+        Details = new List<OrderDetails>();
     }
+    public double TotalAmount =>Details.Sum(detail => detail.Price * detail.Quantity);
 
     public override string ToString()
     {
         return $"Order ID: {OrderId}, Customer: {Customer}, Total Amount: {TotalAmount}";
+    }
+
+    // 重写Equals方法以确保订单不重复
+    public override bool Equals(object obj)
+    {
+        if (obj == null || GetType() != obj.GetType())
+            return false;
+
+        Order otherOrder = (Order)obj;
+        return OrderId == otherOrder.OrderId;
+    }
+
+    public override int GetHashCode()
+    {
+        return OrderId.GetHashCode();
     }
 }
 
 // 订单服务类
 public class OrderService
 {
-    private List<Order> orders;
-
-    public OrderService()
-    {
-        orders = new List<Order>();
-    }
+    private List<Order> orders = new List<Order>();
 
     // 添加订单
     public void AddOrder(Order order)
     {
-        if (!orders.Contains(order))
-        {
-            orders.Add(order);
-        }
-        else
-        {
-            throw new ArgumentException("Order already exists.");
-        }
+        if (orders.Contains(order))
+            throw new InvalidOperationException("Order already exists.");
+
+        orders.Add(order);
     }
 
     // 删除订单
     public void RemoveOrder(int orderId)
     {
         Order orderToRemove = orders.FirstOrDefault(order => order.OrderId == orderId);
-        if (orderToRemove != null)
-        {
-            orders.Remove(orderToRemove);
-        }
-        else
-        {
-            throw new ArgumentException("Order not found.");
-        }
+        if (orderToRemove == null)
+            throw new InvalidOperationException("Order not found.");
+
+        orders.Remove(orderToRemove);
     }
 
-    // 修改订单（只修改客户名称）
+    // 修改订单
     public void ModifyOrder(int orderId, string newCustomer)
     {
         Order orderToModify = orders.FirstOrDefault(order => order.OrderId == orderId);
-        if (orderToModify != null)
-        {
-            orderToModify.Customer = newCustomer;
-        }
-        else
-        {
-            throw new ArgumentException("Order not found.");
-        }
+        if (orderToModify == null)
+            throw new InvalidOperationException("Order not found.");
+
+        orderToModify.Customer = newCustomer;
     }
 
-    // 按订单号查询订单
+    // 按照订单号查询订单
     public Order QueryOrderByOrderId(int orderId)
     {
         return orders.FirstOrDefault(order => order.OrderId == orderId);
     }
 
-    // 按商品名称查询订单
-    public List<Order> QueryOrdersByProductName(string productName)
+    // 按照商品名称查询订单
+    public List<Order> QueryOrderByProductName(string productName)
     {
-        return orders.Where(order => order.Details.Any(detail => detail.ProductName == productName))
-                     .ToList();
+        return orders.Where(order =>
+            order.Details.Any(detail => detail.ProductName.Equals(productName, StringComparison.OrdinalIgnoreCase)))
+            .ToList();
     }
 
-    // 按客户查询订单
-    public List<Order> QueryOrdersByCustomer(string customer)
+    // 按照客户查询订单
+    public List<Order> QueryOrderByCustomer(string customer)
     {
-        return orders.Where(order => order.Customer == customer)
-                     .ToList();
+        return orders.Where(order => order.Customer.Equals(customer, StringComparison.OrdinalIgnoreCase))
+            .ToList();
     }
 
-    // 按订单金额查询订单
-    public List<Order> QueryOrdersByAmount(double amount)
+    // 按照订单金额查询订单
+    public List<Order> QueryOrderByAmount(double amount)
     {
-        return orders.Where(order => order.TotalAmount == amount)
-                     .OrderBy(order => order.TotalAmount)
-                     .ToList();
+        return orders.Where(order => order.TotalAmount == amount).ToList();
     }
 
-    // 排序订单
-    public void SortOrders(Func<Order, object> keySelector)
+    // 按照订单总金额排序返回
+    public List<Order> SortOrdersByAmount()
     {
-        orders = orders.OrderBy(keySelector).ToList();
+        return orders.OrderBy(order => order.TotalAmount).ToList();
+    }
+
+    // 自定义排序方法
+    public List<Order> CustomSortOrders(Func<Order, object> keySelector)
+    {
+        return orders.OrderBy(keySelector).ToList();
     }
 }
 
-class Program
+public class Program
 {
-    static void Main(string[] args)
+    public static void Main()
     {
+        // 创建订单服务
         OrderService orderService = new OrderService();
 
-        // 添加订单示例
-        Order order1 = new Order
-        {
-            OrderId = 1,
-            Customer = "Alice",
-            Details = new List<OrderDetails>
-            {
-                new OrderDetails { Id = 1, ProductName = "Product A", Price = 10.0, Quantity = 2 },
-                new OrderDetails { Id = 2, ProductName = "Product B", Price = 15.0, Quantity = 1 }
-            }
-        };
+        // 添加测试订单
+        Order order1 = new Order { OrderId = 1, Customer = "Alice" };
+        Order order2 = new Order { OrderId = 2, Customer = "Bob" };
+        Order order3 = new Order { OrderId = 3, Customer = "Alice" };
+
+        // 添加订单到订单服务
         orderService.AddOrder(order1);
-
-       
-
-        // 测试删除订单
-        try
-        {
-            orderService.RemoveOrder(1);
-            Console.WriteLine("Order removed successfully.");
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"Error removing order: {ex.Message}");
-        }
-        Order order2 = new Order
-        {
-            OrderId = 2,
-            Customer = "Jackk",
-            Details = new List<OrderDetails>
-            {
-                new OrderDetails { Id = 1, ProductName = "Product A", Price = 10.0, Quantity = 2 },
-                new OrderDetails { Id = 2, ProductName = "Product B", Price = 15.0, Quantity = 1 }
-            }
-        };
         orderService.AddOrder(order2);
-        // 测试修改订单
-        try
-        {
-            orderService.ModifyOrder(2, "Bob");
-            Console.WriteLine("Order modified successfully.");
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"Error modifying order: {ex.Message}");
-        }
 
-        // 测试查询订单功能
-        var queriedOrder = orderService.QueryOrderByOrderId(2);
-        Console.WriteLine("Queried Order:");
-        Console.WriteLine(queriedOrder);
+        // 测试查询订单
+        Console.WriteLine("Query order by order ID:");
+        Console.WriteLine(orderService.QueryOrderByOrderId(1));
+        Console.WriteLine(orderService.QueryOrderByOrderId(3));
 
-        var queriedOrdersByProduct = orderService.QueryOrdersByProductName("Product A");
-        Console.WriteLine("Queried Orders By Product:");
-        foreach (var order in queriedOrdersByProduct)
+        Console.WriteLine("\nQuery order by customer:");
+        Console.WriteLine(string.Join(", ", orderService.QueryOrderByCustomer("Alice")));
+
+        Console.WriteLine("\nQuery order by product name:");
+        order1.Details = new List<OrderDetails>
         {
-            Console.WriteLine(order);
-        }
+            new OrderDetails { ProductName = "Product A", Price = 10, Quantity = 2 },
+            new OrderDetails { ProductName = "Product B", Price = 20, Quantity = 1 }
+        };
+        order2.Details = new List<OrderDetails>
+        {
+            new OrderDetails { ProductName = "Product C", Price = 15, Quantity = 3 }
+        };
+        orderService.AddOrder(order3); // Add order with no details for testing query by product name
+        Console.WriteLine(string.Join(", ", orderService.QueryOrderByProductName("Product B")));
 
         // 测试排序订单
-        orderService.SortOrders(order => order.TotalAmount);
-        Console.WriteLine("Sorted Orders:");
-        foreach (var order in orderService.QueryOrdersByAmount(order1.TotalAmount))
+        Console.WriteLine("\nSorted orders by amount:");
+        foreach (var order in orderService.SortOrdersByAmount())
         {
             Console.WriteLine(order);
         }
 
-        Console.ReadLine(); // 保持控制台窗口打开
+        // 测试自定义排序
+        Console.WriteLine("\nCustom sorted orders by customer:");
+        foreach (var order in orderService.CustomSortOrders(order => order.Customer))
+        {
+            Console.WriteLine(order);
+        }
     }
 }
